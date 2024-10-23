@@ -1,4 +1,5 @@
-require "open-uri"
+require 'open-uri'
+require 'json'
 
 class GamesController < ApplicationController
   VOWELS = %w(A E I O U Y)
@@ -23,8 +24,11 @@ class GamesController < ApplicationController
   end
 
   def english_word?(word)
-    response = URI.open("https://wagon-dictionary.herokuapp.com/#{word}")
+    response = URI.open("https://api.dictionaryapi.dev/api/v2/entries/en/#{word}")
     json = JSON.parse(response.read)
-    json['found']
+    json.any?
+  rescue OpenURI::HTTPError => e
+    puts "Error fetching word: #{e.message}"
+    false
   end
 end
